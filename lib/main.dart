@@ -1,49 +1,146 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_client/pages/DiscoveryPage.dart';
+import 'package:flutter_client/pages/MyInfoPage.dart';
 import 'package:flutter_client/pages/NewListPage.dart';
 import 'package:flutter_client/pages/TweetsListPage.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(new MyOSCClient());
 
-class MyApp extends StatefulWidget {
+class MyOSCClient extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    return new OSSClientState();
-  }
+  State<StatefulWidget> createState() => new MyOSCClientState();
 }
 
-class OSSClientState extends State<MyApp> {
+class MyOSCClientState extends State<MyOSCClient> {
   int _tabIndex = 0;
-  var _body = new IndexedStack(children: <Widget>[
-    new NewListPage(),
-    new TweetsListPage(),
-    // ignore: implicit_this_reference_in_initializer
-  ], index: _tabIndex);
+  final tabTextStyleNormal = new TextStyle(color: const Color(0xff969696));
+  final tabTextStyleSelected = new TextStyle(color: const Color(0xff63ca6c));
+
+  var tabImages;
+  var _body;
+  var appBarTitles = ['资讯', '动弹', '发现', '我的'];
+
+  Image getTabImage(path) {
+    return new Image.asset(path, width: 20.0, height: 20.0);
+  }
+
+  void initData() {
+
+  }
+
+  Image getImageICon(int index) {
+    if (index == _tabIndex) {
+      return tabImages[index][1];
+    }
+    return tabImages[index][0];
+  }
+
+  TextStyle getTabTextStyle(int curIndex) {
+    if (curIndex == _tabIndex) {
+      return tabTextStyleSelected;
+    }
+    return tabTextStyleNormal;
+  }
+
+  Text getTabTitle(int curIndex) {
+    return new Text(appBarTitles[curIndex], style: getTabTextStyle(curIndex));
+  }
+
+  List<BottomNavigationBarItem> getBottomItem() {
+    List<BottomNavigationBarItem> list = new List();
+    for (int i = 0; i < 4; i++) {
+      list.add(new BottomNavigationBarItem(
+          icon: getImageICon(i), title: getTabTitle(i)));
+    }
+    return list;
+  }
+
+  Image getTabIcon(int curIndex) {
+    if (curIndex == _tabIndex) {
+      return tabImages[curIndex][1];
+    }
+    return tabImages[curIndex][0];
+  }
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    initImage();
     return new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: new ThemeData(primaryColor: Colors.blue),
-      home: new Scaffold(
+        theme: new ThemeData(
+            primaryColor: const Color(0xFF63CA6C)
+        ),
+        home: new Scaffold(
           appBar: new AppBar(
-            title: new Text("OSSClient",
-                style: new TextStyle(color: Colors.white)),
-            iconTheme: new IconThemeData(color: Colors.white),
+              title: new Text(appBarTitles[_tabIndex],
+                  style: new TextStyle(color: Colors.white)),
+              iconTheme: new IconThemeData(color: Colors.white)
           ),
-          body: new CupertinoTabBar(items: null,currentIndex: _tabIndex,onTap: (index){
-            _tabIndex=index;
-          },)
-
-    )
-    );
+          body: _body,
+          bottomNavigationBar: new CupertinoTabBar(
+            items: <BottomNavigationBarItem>[
+              new BottomNavigationBarItem(
+                  icon: getTabIcon(0),
+                  title: getTabTitle(0)),
+              new BottomNavigationBarItem(
+                  icon: getTabIcon(1),
+                  title: getTabTitle(1)),
+              new BottomNavigationBarItem(
+                  icon: getTabIcon(2),
+                  title: getTabTitle(2)),
+              new BottomNavigationBarItem(
+                  icon: getTabIcon(3),
+                  title: getTabTitle(3)),
+            ],
+            currentIndex: _tabIndex,
+            onTap: (index) {
+              setState(() {
+                _tabIndex = index;
+              });
+            },
+          ),
+          drawer: new Drawer(
+            child: new Center(
+              // ignore: argument_type_not_assignable
+              child: new Image(
+                  image: new AssetImage("images/ic_nav_news_activd.png")),
+            ),
+          ),
+        ));
   }
 
-  List<BottomNavigationBarItem> getBottomItem(){
-
-
+  void initImage() {
+    if (tabImages == null) {
+      tabImages = [
+        [
+          getTabImage('images/ic_nav_news_normal.png'),
+          getTabImage('images/ic_nav_news_activd.png')
+        ],
+        [
+          getTabImage('images/ic_nav_tweet_normal.png'),
+          getTabImage('images/ic_nav_tweet_actived.png')
+        ],
+        [
+          getTabImage('images/ic_nav_discover_normal.png'),
+          getTabImage('images/ic_nav_discover_actived.png')
+        ],
+        [
+          getTabImage('images/ic_nav_my_normal.png'),
+          getTabImage('images/ic_nav_my_pressed.png')
+        ]
+      ];
+    }
+      _body = new IndexedStack(
+        children: <Widget>[
+          new NewListPage(),
+          new TweetsListPage(),
+          new DiscoveryPage(),
+          new MyInfoPage()
+        ],
+        index: _tabIndex,
+      );
   }
 }
+
 
